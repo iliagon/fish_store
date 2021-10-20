@@ -1,0 +1,299 @@
+openapi: "3.0.2"
+info:
+  version: 0.1.0
+  title: Fish store
+servers:
+  - url: http://localhost:9006/api
+
+tags:
+  - name: fish
+    description: "Information about product"
+paths:
+  /products/{productId}:
+    parameters:
+      - in: path
+        name: productId
+        schema:
+          type: integer
+          format: int64
+        required: true
+        description: The product ID.
+    get:
+      operationId: getProductById
+      summary: Get product
+      tags:
+        - product
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductWithIdDto'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      operationId: putProduct
+      summary: Update product
+      tags:
+        - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductBaseDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductWithIdDto'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      operationId: deleteProduct
+      summary: Delete product
+      tags:
+        - product
+      responses:
+        200:
+          description: successful operation
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /products:
+    get:
+      operationId: getAllProducts
+      summary: Get all products
+      tags:
+        - product
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductWithIdDto"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: postProduct
+      summary: Create product
+      tags:
+        - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductBaseDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductWithIdDto'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /orders/{orderId}:
+    parameters:
+      - in: path
+        name: orderId
+        schema:
+          type: integer
+          format: int64
+        required: true
+        description: The order ID.
+    get:
+      operationId: getOrderById
+      summary: Get order
+      tags:
+        - order
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderExtendedResponseDto'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      operationId: putOrder
+      summary: Update order
+      tags:
+        - order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderBaseDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderWithIdDto'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      operationId: deleteOrder
+      summary: Delete order
+      tags:
+        - order
+      responses:
+        200:
+          description: successful operation
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /orders:
+    get:
+      operationId: getAllOrders
+      summary: Get all orders
+      tags:
+        - order
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderWithIdDto"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      operationId: postOrder
+      summary: Create order
+      tags:
+        - order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderBaseDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderWithIdDto'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+# Descriptions of common components
+components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorMessage"
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorMessage"
+  schemas:
+    ProductBaseDto:
+      type: object
+      required:
+        - name
+        - price
+        - imageUri
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
+        imageUri:
+          type: string
+          format: uri
+          description: "link to the image"
+    ProductWithIdDto:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+      allOf:
+        - $ref: "#/components/schemas/ProductBaseDto"
+    OrderBaseDto:
+      type: object
+      required:
+        - productIds
+      properties:
+        productIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Id"
+    OrderWithIdDto:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+      allOf:
+        - $ref: "#/components/schemas/OrderBaseDto"
+    OrderExtendedResponseDto:
+      required:
+        - id
+        - products
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductWithIdDto"
+    ErrorMessage:
+      type: object
+      description: "Exception details"
+      required:
+        - code
+        - devMessage
+      properties:
+        code:
+          type: string
+          description: "Internal error code"
+        devMessage:
+          type: string
+          description: "Message for developer"
+        userMessage:
+          type: string
+          description: "Message for user"
+    Id:
+      type: integer
+      format: int64
