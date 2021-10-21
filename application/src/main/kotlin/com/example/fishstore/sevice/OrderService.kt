@@ -5,42 +5,53 @@ import com.example.fishstore.mapper.OrderMapper
 import com.example.fishstore.models.business.OrderStatus
 import com.example.fishstore.models.dto.OrderBaseDto
 import com.example.fishstore.models.dto.OrderExtendedResponseDto
-import com.example.fishstore.models.dto.OrderWithIdDto
+import com.example.fishstore.models.dto.OrderResponseDto
 import com.example.fishstore.models.entity.OrderEntity
+import com.example.fishstore.models.entity.OrderProductEntity
+import com.example.fishstore.models.entity.OrderProductPk
 import com.example.fishstore.repository.OrderRepository
 import org.springframework.stereotype.Service
 
 @Service
 class OrderService(
-    val repository: OrderRepository,
+    val orderRepository: OrderRepository,
     val mapper: OrderMapper,
     val productService: ProductService
 ) {
-    fun create(orderDto: OrderBaseDto): OrderWithIdDto {
-        val productEntities = productService.findEntitiesByIds(orderDto.productIds.toSet())
-        val savedOrder = repository.save(OrderEntity(OrderStatus.PAID, productEntities))
-        return mapper.toOrderWithIdDto(savedOrder)
+    fun create(orderDto: OrderBaseDto): OrderResponseDto {
+        val orderProductEntities = constructOrderProductEntities(orderDto)
+        val savedOrder = orderRepository.save(OrderEntity(OrderStatus.PAID, orderProductEntities))
+        return mapper.toOrderResponseDto(savedOrder)
     }
 
-    fun update(id: Long, orderDto: OrderBaseDto): OrderWithIdDto {
-        repository.findById(id).orElseThrow { notFoundException(id) }
-        val productEntities = productService.findEntitiesByIds(orderDto.productIds.toSet())
-        val savedOrder = repository.save(OrderEntity(OrderStatus.PAID, productEntities).apply { this.id = id })
-        return mapper.toOrderWithIdDto(savedOrder)
+    fun update(id: Long, orderDto: OrderBaseDto): OrderResponseDto {
+        orderRepository.findById(id).orElseThrow { notFoundException(id) }
+        val orderProductEntities = constructOrderProductEntities(orderDto)
+        val savedOrder = orderRepository.save(OrderEntity(OrderStatus.PAID, orderProductEntities).apply { this.id = id })
+        return mapper.toOrderResponseDto(savedOrder)
+    }
+
+    private fun constructOrderProductEntities(orderDto: OrderBaseDto): List<OrderProductEntity> {
+        val productEntities = productService.findEntitiesByIds(orderDto.products.map { it.id }.toSet())
+        val orderProductEntities = productEntities.map { productEntity ->
+            val quantity = orderDto.products.first { it.id == productEntity.id!! }.quantity
+            OrderProductEntity(OrderProductPk().apply { product = productEntity }, quantity)
+        }
+        return orderProductEntities
     }
 
     fun find(id: Long): OrderExtendedResponseDto {
-        val savedOrder = repository.findOrderWithProductsById(id).orElseThrow { notFoundException(id) }
+        val savedOrder = orderRepository.findById(id).orElseThrow { notFoundException(id) }
         return mapper.toOrderExtendedResponseDto(savedOrder)
     }
 
-    fun findAll(): List<OrderWithIdDto> {
-        val savedOrders = repository.findAll()
-        return savedOrders.map(mapper::toOrderWithIdDto)
+    fun findAll(): List<OrderResponseDto> {
+        val savedOrders = orderRepository.findAll()
+        return savedOrders.map(mapper::toOrderResponseDto)
     }
 
     fun delete(id: Long) {
-        repository.deleteById(id)
+        orderRepository.deleteById(id)
     }
 
     fun notFoundException(id: Long, ex: Exception? = null) =

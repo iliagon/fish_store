@@ -3,7 +3,7 @@ package com.example.fishstore.controllers.impl
 import com.example.fishstore.controllers.api.OrdersApi
 import com.example.fishstore.models.dto.OrderBaseDto
 import com.example.fishstore.models.dto.OrderExtendedResponseDto
-import com.example.fishstore.models.dto.OrderWithIdDto
+import com.example.fishstore.models.dto.OrderResponseDto
 import com.example.fishstore.models.dto.ProductWithIdDto
 import com.example.fishstore.sevice.OrderService
 import org.springframework.http.ResponseEntity
@@ -18,7 +18,7 @@ class OrderController(
         return ResponseEntity.noContent().build();
     }
 
-    override fun getAllOrders(): ResponseEntity<List<OrderWithIdDto>> {
+    override fun getAllOrders(): ResponseEntity<List<OrderResponseDto>> {
         val orders = orderService.findAll()
         return ResponseEntity.ok(orders)
     }
@@ -28,12 +28,12 @@ class OrderController(
         return ResponseEntity.ok(order)
     }
 
-    override fun postOrder(orderBaseDto: OrderBaseDto?): ResponseEntity<OrderWithIdDto> {
+    override fun postOrder(orderBaseDto: OrderBaseDto?): ResponseEntity<OrderResponseDto> {
         val orders = orderService.create(orderBaseDto!!)
         return ResponseEntity.ok(orders)
     }
 
-    override fun putOrder(orderId: Long, orderBaseDto: OrderBaseDto?): ResponseEntity<OrderWithIdDto> {
+    override fun putOrder(orderId: Long, orderBaseDto: OrderBaseDto?): ResponseEntity<OrderResponseDto> {
         val orders = orderService.update(orderId, orderBaseDto!!)
         return ResponseEntity.ok(orders)
     }

@@ -8,6 +8,7 @@ import org.mapstruct.Mapping
 
 @Mapper(uses = [UriToStringMapper::class])
 interface ProductMapper {
+
     fun toProductWithIdDto(entity: ProductEntity): ProductWithIdDto
 
     @Mapping(target = "id", ignore = true)

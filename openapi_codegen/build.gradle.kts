@@ -39,6 +39,16 @@ tasks.withType<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>() {
         )
     )
 
+    //    generatorName.set("spring")
+//    configOptions.set(
+//        mapOf(
+//            "interfaceOnly" to "true",
+//            "sortParamsByRequiredFlag" to "true",
+//            "performBeanValidation" to "true",
+//            "useOptional" to "true",
+//        )
+//    )
+
     doLast { // delete unnecessary files
         delete("$outputDirToGenerate/pom.xml")
         delete("$outputDirToGenerate/.openapi-generator-ignore")

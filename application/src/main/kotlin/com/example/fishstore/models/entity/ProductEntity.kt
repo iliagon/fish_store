@@ -16,4 +16,4 @@ class ProductEntity(
     val price: BigDecimal,
     @Column(name = "imageUri", nullable = false)
     val imageUri: String,
-) : BaseEntity<Long>()
+) : BaseEntity<Long>(){}

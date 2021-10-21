@@ -148,7 +148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderWithIdDto'
+                $ref: '#/components/schemas/OrderResponseDto'
         400:
           $ref: "#/components/responses/BadRequest"
         500:
@@ -179,7 +179,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/OrderWithIdDto"
+                  $ref: "#/components/schemas/OrderResponseDto"
         400:
           $ref: "#/components/responses/BadRequest"
         500:
@@ -200,7 +200,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderWithIdDto'
+                $ref: '#/components/schemas/OrderResponseDto'
         400:
           $ref: "#/components/responses/BadRequest"
         500:
@@ -213,13 +213,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorMessage"
+            $ref: "#/components/schemas/ErrorMessageDto"
     InternalServerError:
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorMessage"
+            $ref: "#/components/schemas/ErrorMessageDto"
   schemas:
     ProductBaseDto:
       type: object
@@ -251,34 +251,61 @@ components:
     OrderBaseDto:
       type: object
       required:
-        - productIds
+        - products
       properties:
-        productIds:
+        products:
           type: array
           items:
-            $ref: "#/components/schemas/Id"
-    OrderWithIdDto:
+            type: object
+            description: "contains product id and quantity"
+            required:
+              - id
+              - quantity
+            properties:
+              id:
+                $ref: "#/components/schemas/Id"
+              quantity:
+                type: integer
+    OrderResponseDto:
       type: object
       required:
         - id
+        - order_status
       properties:
         id:
           $ref: "#/components/schemas/Id"
+        order_status:
+          $ref: "#/components/schemas/OrderStatusDto"
       allOf:
         - $ref: "#/components/schemas/OrderBaseDto"
     OrderExtendedResponseDto:
       required:
         - id
+        - order_status
         - products
       type: object
       properties:
         id:
           $ref: "#/components/schemas/Id"
+        order_status:
+          $ref: "#/components/schemas/OrderStatusDto"
         products:
           type: array
           items:
-            $ref: "#/components/schemas/ProductWithIdDto"
-    ErrorMessage:
+            type: object
+            description: "contains product and quantity"
+            required:
+              - product
+              - quantity
+            properties:
+              product:
+                $ref: "#/components/schemas/ProductWithIdDto"
+              quantity:
+                type: integer
+    OrderStatusDto:
+      type: string
+      enum: [ paid ]
+    ErrorMessageDto:
       type: object
       description: "Exception details"
       required:

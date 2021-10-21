@@ -4,7 +4,7 @@ import com.example.fishstore.controllers.api.OrdersApi
 import com.example.fishstore.controllers.api.ProductsApi
 import com.example.fishstore.models.dto.OrderBaseDto
 import com.example.fishstore.models.dto.OrderExtendedResponseDto
-import com.example.fishstore.models.dto.OrderWithIdDto
+import com.example.fishstore.models.dto.OrderResponseDto
 import com.example.fishstore.models.dto.ProductBaseDto
 import com.example.fishstore.models.dto.ProductWithIdDto
 import com.example.fishstore.sevice.OrderService
